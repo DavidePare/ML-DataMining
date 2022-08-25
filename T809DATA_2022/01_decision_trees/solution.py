@@ -112,23 +112,25 @@ def brute_best_split(
     the threshold
     '''
     best_gini, best_dim, best_theta = float("inf"), None, None
-    '''
-    min = float("inf")
-    max = -float("inf")
-    for i in range(features.shape[1]):
-        if(min > features[i].min()):
-            min=features[i].min()
-        if(max < features[i].max()):
-            max=features[i].max()
-    '''
+
+
     # iterate feature dimensions
     for i in range(features.shape[1]):
         # create the thresholds
-        thetas = np.linspace( features[i].min(),features[i].max(), num_tries)
+        min = float("inf")
+        max = -float("inf")
+        for j in range(features.shape[0]):
+            if features[j][i]<min:
+                min = features[j][i]
+            if features[j][i]>max:
+                max=features[j][i]
+        thetas = np.linspace( min,max, num_tries+2)[1:-1]
         # iterate thresholds
         for theta in thetas:
             calculatedGiny = total_gini_impurity(features,targets,classes,i,theta)
-            if np.less(calculatedGiny,best_gini):
+            if(theta==1.9516129):
+                print("si")
+            if calculatedGiny<best_gini :
                 best_gini=calculatedGiny
                 best_dim= i
                 best_theta=theta
@@ -222,7 +224,6 @@ print("----------------- TEST 1.6 -----------------")
 print(brute_best_split(features,targets, classes,30),"-  (0.16666666666666666, 2, 1.9516129032258065)", "\n")
 
 
-
 p= IrisTreeTrainer(features,targets)
 print("Training the model")
 p.train()
@@ -245,4 +246,5 @@ print("------------- INDEPENDENT PART -------------")
 dt = IrisTreeTrainer(features, targets, classes=classes, train_ratio=0.6)
 dt.plot_progress()
 print("image -> indep_1.png")
+
 
