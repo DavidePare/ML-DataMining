@@ -128,8 +128,6 @@ def brute_best_split(
         # iterate thresholds
         for theta in thetas:
             calculatedGiny = total_gini_impurity(features,targets,classes,i,theta)
-            if(theta==1.9516129):
-                print("si")
             if calculatedGiny<best_gini :
                 best_gini=calculatedGiny
                 best_dim= i
@@ -175,6 +173,7 @@ class IrisTreeTrainer:
         # Remove this method if you don't go for independent section.
         x=[]
         y=[]
+        plt.clf()
         for i in range(1,len(self.train_features)):
             self.tree.fit(self.train_features[:i], self.train_targets[:i])
             x.append(i)
@@ -221,7 +220,8 @@ print("----------------- TEST 1.5 -----------------")
 print(total_gini_impurity(features, targets, classes, 2, 4.65),"-   0.2109259259259259,  ", weighted_impurity(t_1, t_2, classes)== 0.2109259259259259,"\n")
 
 print("----------------- TEST 1.6 -----------------")
-print(brute_best_split(features,targets, classes,30),"-  (0.16666666666666666, 2, 1.9516129032258065)", "\n")
+res=brute_best_split(features,targets, classes,30)
+print(res,"-  (0.16666666666666666, 2, 1.9516129032258065)" , res==np.asarray([(0.16666666666666666, 2, 1.9516129032258065)]),"\n")
 
 
 p= IrisTreeTrainer(features,targets)
