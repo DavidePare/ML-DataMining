@@ -1,6 +1,6 @@
-# Author: 
-# Date:
-# Project: 
+# Author: Davide Parente
+# Date: 26/08/2022
+# Project: 02_nearest_neighbour
 # Acknowledgements: 
 #
 
@@ -108,8 +108,7 @@ def knn_confusion_matrix(
     confusion_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     for i in range(len(y_pred)):
         confusion_matrix[y_pred[i]][point_targets[i]] += 1
-    for line in confusion_matrix:
-        print('  '.join(map(str, line)))
+
     return np.asmatrix(confusion_matrix)
 
 
@@ -219,6 +218,7 @@ def compare_knns(
     # Remove if you don't go for independent section
     accurancy_knn = []
     accurancy_wknn = []
+    plt.clf()
     for i in range(1, points.shape[0]):
         accurancy_knn.append(knn_accuracy(points, targets, classes, i))
         accurancy_wknn.append(wknn_accuracy(points, targets, classes, i))
@@ -242,7 +242,7 @@ def wknn_accuracy(
             cont += 1
     return cont / len(result)
 
-
+'''
 d, t, classes = load_iris()
 x, points = d[0, :], d[1:, :]
 x_target, point_targets = t[0], t[1:]
@@ -320,73 +320,4 @@ print()
 print("------------- INDEPENDENT PART -------------")
 compare_knns(d_test, t_test, classes)
 print("image -> b_4_1.png")
-
-
-# print(euclidian_distance(x, points[0]))
-# print(euclidian_distance(x, points[50]))
-# print(euclidian_distances(x, points))
 '''
-
-print(vote(np.array([0,0,1,2]), np.array([0,1,2])))
-print(vote(np.array([1,1,1,1]), np.array([0,1])))
-
-print(knn(x, points, point_targets, classes, 1))
-print(knn(x, points, point_targets, classes, 5))
-print(knn(x, points, point_targets, classes, 150))
-
-
-print(k_nearest(x, points, 1))
-print(k_nearest(x, points, 3))
-print(knn(x, points, point_targets, classes, 1))
-print(knn(x, points, point_targets, classes, 5))
-print(knn(x, points, point_targets, classes, 150))
-d, t, classes = load_iris()
-(d_train, t_train), (d_test, t_test) = split_train_test(d, t, train_ratio=0.8)
-
-r1=[2,2,2,2,0,1,0,1,1,0,1,2,1,2,2,0,1,0,2,1,1,1,1,1,2,0,1,1,1]
-l=compare_knns(d_test, t_test, classes)
-print(l)
-
-l=knn_predict2(d_test, t_test, classes, 10)
-
-print(l)
-print(r1[22])
-'''
-# knn_plot_points(d, t, classes, 3)
-# print(d_test)
-
-# l=knn_predict(d_test, t_test, classes, 10)
-# print(l)
-# l=compare_knns(d_test, t_test, classes)
-# print(l)
-# compare_knns(d_test,t_test,classes)
-
-
-# print(t_test)
-'''
-for i in range(l.shape[0]):
-    if r1[i]!=l[i]:
-        print("False1")
-        print(i)
-        print(r1[i])
-        print(l[i])
-
-l=knn_predict(d_test, t_test, classes, 10)
-r1=[2,2,2,2,0,1,0,1,1,0,1,2,1,2,2,0,1,0,2,1,1,1,1,1,2,0,1,1,1]
-for i in range(l.shape[0]):
-    if r1[i]!=l[i]:
-        print("False1")
-        print(i)
-        print(r1[i])
-        print(l[i])
-l=knn_predict(d_test, t_test, classes, 5)
-r2=[2,2,2,2,0,1,0,1,1,0,1,2,1,2,2,0,1,0,2,2,1,1,2,1,2,0,1,1,2]
-for i in range(l.shape[0]):
-    if r2[i]!=l[i]:
-        print("False")
-'''
-# print(knn_accuracy(d_test, t_test, classes, 10))
-# print(knn_accuracy(d_test, t_test, classes, 5))
-# knn_confusion_matrix(d_test, t_test, classes, 10)
-# knn_confusion_matrix(d_test, t_test, classes, 20)
-# print(best_k(d_train, t_train, classes))

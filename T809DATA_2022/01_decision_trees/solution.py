@@ -1,6 +1,6 @@
 # Author: Davide Parente
-# Date:
-# Project: 
+# Date: 26/08/2022
+# Project: 01_decision_trees
 # Acknowledgements: 
 #
 
@@ -191,11 +191,10 @@ class IrisTreeTrainer:
         confusion_matrix= [[0,0,0],[0,0,0],[0,0,0]]
         for i in range(self.test_targets.shape[0]):
             confusion_matrix[self.test_targets[i]][y_pred[i]]+=1
-        for line in confusion_matrix:
-             print ('  '.join(map(str, line)))
+        return confusion_matrix
 
 
-
+'''
 features, targets, classes = load_iris()
 
 print("----------------- TEST 1.1 -----------------")
@@ -240,11 +239,10 @@ print("----------------- TEST 2.4 -----------------")
 s= p.guess()
 print(s)
 print("----------------- TEST 2.5 -----------------")
-p.confusion_matrix()
+print(p.confusion_matrix())
 
 print("------------- INDEPENDENT PART -------------")
 dt = IrisTreeTrainer(features, targets, classes=classes, train_ratio=0.6)
 dt.plot_progress()
 print("image -> indep_1.png")
-
-
+'''
