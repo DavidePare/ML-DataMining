@@ -39,7 +39,7 @@ def update_sequence_mean(
 
 
 def _plot_sequence_estimate():
-    data = gen_data(100,3, np.array([0, 0, 0]),1)
+    data = gen_data(3000,3, np.array([0, 1, -1]),np.sqrt(3))
     estimates = [np.array([0, 0, 0])]
     for i in range(data.shape[0]):
         estimates.append(update_sequence_mean(estimates[i], data[i], i+1))
@@ -55,7 +55,7 @@ def _square_error(y, y_hat):
 
 
 def _plot_mean_square_error():
-    data = gen_data(100,3, np.array([0, 0, 0]),1)
+    data = gen_data(100,3, np.array([0, 1, -1]),np.sqrt(3))
     estimates = [np.array([0, 0, 0])]
     y=np.mean(data)
     for i in range(data.shape[0]):
@@ -91,7 +91,7 @@ print(x)
 print("Correct Result \n [[ 0.61286571, -0.5482684 ,  0.86251906],\n [-0.40644746,  0.06323465,  0.15331182]]")
 #m=np.asmatrix([[ 0.61286571, -0.5482684 ,  0.86251906],[-0.40644746,  0.06323465,  0.15331182]])
 #print(m==np.asmatrix(x))
-'''
+
 print("-------TEST 1.1---------")
 x=gen_data(5, 1, np.array([0.5]), 0.5)
 print(x)
@@ -103,7 +103,7 @@ print("-------TEST1.2-------")
 x=gen_data(300,3, np.array([0, 1, -1]),np.sqrt(3))
 tools.scatter_3d_data(x)
 tools.bar_per_axis(x)
-'''
+
 
 print("-------TEST1.4------")
 mean = np.mean(x, 0)
