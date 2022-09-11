@@ -1,0 +1,22 @@
+def indipendent_part():
+    features, targets, classes = load_iris()
+    (train_features, train_targets), (test_features, test_targets)\
+        = split_train_test(features, targets, train_ratio=0.8)
+    f1,t1=features[70:95],targets[70:95]
+    for i in range(0,150):
+        train_features= np.concatenate((train_features,f1),axis=0)
+        train_targets= np.append(train_targets,t1)
+    (train_features, train_targets),(test_features, test_targets)\
+    = split_train_test(train_features, train_targets, train_ratio=0.8)
+    likelihood=maximum_likelihood(train_features, train_targets, test_features, classes)
+    aposteriori=maximum_aposteriori(train_features, train_targets, test_features, classes)
+    print("Accuracy of maximum likelihood:",accurancy(predict(likelihood),test_targets))
+    print("Accuracy of maximum aposteriori:",accurancy(predict(aposteriori),test_targets))
+    C=confusion_matrix_likelihood(train_features,train_targets,test_features,test_targets,classes)
+    D=confusion_matrix_aposteriori(train_features,train_targets,test_features,test_targets,classes)
+    print("Confusion Matrix of maximum likelihood:")
+    for line in C:
+        print("\t ",line[0],"  ",line[1],"  ",line[2])
+    print("Confusion Matrix of maximum aposteriori:")
+    for line in D:
+        print("\t ",line[0],"  ",line[1],"  ",line[2])
