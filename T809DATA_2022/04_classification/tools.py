@@ -3,7 +3,6 @@ from typing import Union
 import numpy as np
 import sklearn.datasets as datasets
 
-
 def load_iris():
     '''
     Load the iris dataset that contains N input features
