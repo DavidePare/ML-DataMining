@@ -242,7 +242,7 @@ def wknn_accuracy(
             cont += 1
     return cont / len(result)
 
-'''
+
 d, t, classes = load_iris()
 x, points = d[0, :], d[1:, :]
 x_target, point_targets = t[0], t[1:]
@@ -320,4 +320,4 @@ print()
 print("------------- INDEPENDENT PART -------------")
 compare_knns(d_test, t_test, classes)
 print("image -> b_4_1.png")
-'''
+
