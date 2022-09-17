@@ -2,6 +2,7 @@ from typing import Union
 import numpy as np
 
 from tools import load_iris, split_train_test
+import matplotlib.pyplot as plt
 
 
 def sigmoid(x: float) -> float:
@@ -155,13 +156,8 @@ def train_nn(
         W1 = W1- eta * dE1_total/ X_train.shape[0]
         W2 = W2- eta * dE2_total/ X_train.shape[0]
 
-    print(E_total)
-    print(misclassification_rate)
-    print(results)
-    print(t_train)
-    return [np.zeros(5), np.zeros(5), np.zeros(5), np.zeros(5), E_total]
-    #print(W1)
-    #print(W2)
+
+    return W1,W2,np.asarray(E_total),misclassification_rate,results
 
 
 
@@ -176,7 +172,75 @@ def test_nn(
     Return the predictions made by a network for all features
     in the test set X.
     '''
-    ...
+    results=[]
+    for i in range(X.shape[0]):
+        y,z,z1,a1,a2=ffnn(X[i],M,K,W1,W2)
+        results.append(np.argmax(y))
+    return np.asarray(results)
+
+def tester():
+    (train_features, train_targets), (test_features, test_targets) = \
+        split_train_test(features, targets)
+    K = 3  # number of classes
+    M = 6
+    D = train_features.shape[1]
+    # Initialize two random weight matrices
+    W1 = 2 * np.random.rand(D + 1, M) - 1
+    W2 = 2 * np.random.rand(M + 1, K) - 1
+    W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
+    accuracy_ofTrainer= accurancy(np.asarray(last_guesses),train_targets)
+    y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
+    accuracy_ofTester= accurancy(np.asarray(y_predicted),test_targets)
+    print("Accuracy of trainer:",accuracy_ofTrainer)
+    print("Accuracy of tester:",accuracy_ofTester)
+    matrixOne=confusion_matrix(np.asarray(last_guesses),train_targets)
+    matrixTwo=confusion_matrix(np.asarray(y_predicted),test_targets)
+    print("Confusion matrix of the trainer:")
+    print(matrixOne)
+    print("Confusion matrix of the tester:")
+    print(matrixTwo)
+    plot_ETotal(Etotal)
+    plot_misclassification_rate(misclassification_rate)
+
+def accurancy(
+    y_calucated: np.ndarray,
+    y_test: np.ndarray
+) -> float:
+    correctness=0
+    for i in range(y_calucated.shape[0]):
+        if(y_calucated[i]== y_test[i]):
+            correctness+=1
+    return correctness/y_test.shape[0]
+
+def confusion_matrix(
+    y_pred: np.ndarray,
+    target: np.ndarray
+)  -> np.matrix:
+    confusion_matrix= [[0,0,0],[0,0,0],[0,0,0]]
+    for i in range(target.shape[0]):
+        confusion_matrix[target[i]][y_pred[i]]+=1
+    return np.asmatrix(confusion_matrix)
+
+
+def plot_ETotal(
+    E_total : np.ndarray
+):
+    plt.plot(E_total)
+    plt.savefig("eTotal.png")
+    plt.clf()
+
+def plot_misclassification_rate(
+    misclassification_rate : np.ndarray
+
+):
+    plt.plot(misclassification_rate)
+    plt.savefig("misclassification.png")
+    plt.clf()
+
+def independent():
+    pass
+
+
 
 print("----TEST 1.1-----")
 print(sigmoid(0.5) == 0.6224593312018546)
@@ -235,11 +299,12 @@ print(W1)
 print(W2)
 
 
-print("----- TEST 1.4 -----")
+print("----- TEST 2.1 -----")
 
 np.random.seed(1234)
 (train_features, train_targets), (test_features, test_targets) = \
         split_train_test(features, targets)
+
 K = 3  # number of classes
 M = 6
 D = train_features.shape[1]
@@ -247,5 +312,17 @@ D = train_features.shape[1]
 W1 = 2 * np.random.rand(D + 1, M) - 1
 W2 = 2 * np.random.rand(M + 1, K) - 1
 W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features[:20, :], train_targets[:20], M, K, W1, W2, 500, 0.1)
+print(misclassification_rate)
+print("Calculated ",last_guesses)
+print("Correct Value ",train_targets[:20])
+
+print("----- TEST 2.2 -----")
+guesses= test_nn(test_features,M,K,W1tr,W2tr)
+print(guesses)
+print(test_targets)
+
+
+print("----- TEST 2.3 -----")
+tester()
 
 
