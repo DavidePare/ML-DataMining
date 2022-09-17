@@ -73,7 +73,42 @@ def backprop(
     Perform the backpropagation on given weights W1 and W2
     for the given input pair x, target_y
     '''
-    ...
+
+    y_k,z0,z1,aOne,aTwo=ffnn(x,M,K,W1,W2)
+    dE1= np.zeros((W1.shape[0],W1.shape[1]))
+    dE2= np.zeros((W2.shape[0],W2.shape[1]))
+    delta_k = y_k -target_y
+    delta_y=[]
+
+    #Play with index
+    W=W2.T
+    for j in range(len(aOne)):
+        value=0
+        for i in range(K):
+            value+=W[i,j+1]*delta_k[i]
+        delta_y.append(d_sigmoid(aOne[j])*value)
+    '''
+    print("Ci" ,delta_y)
+
+    print(len(delta_y))
+    print("a1  ", len(aOne), "  a2 ",len(aTwo))
+    print("W1 ",W1.shape[0]," ",W1.shape[1])
+
+    print("W2 ",W2.shape[0]," ",W2.shape[1])
+    print("z0 ",len(z0), "  z1 ",len(z1))
+    '''
+    for i in range(dE1.shape[0]):
+        for j in range(dE1.shape[1]):
+            dE1[i][j] = delta_y[j]*z0[i]
+    #print(np.asarray(dE1))
+
+    for i in range(dE2.shape[0]):
+        for j in range(dE2.shape[1]):
+            dE2[i][j] = delta_k[j]*z1[i]
+    #print(np.asarray(dE2))
+    return y_k,dE1,dE2
+    #print(result)
+    #print(y_k)
 
 
 def train_nn(
@@ -94,9 +129,19 @@ def train_nn(
     3. Backpropagating the error through the network to adjust
     the weights.
     '''
-    ...
-
-
+    for i in range(iterations):
+        dE1_total= np.zeros((W1.shape[0],W1.shape[1]))
+        dE2_total= np.zeros((W2.shape[0],W2.shape[1]))
+        for i,e in enumerate(X_train):
+            target_y = np.zeros(K)
+            target_y[t_train[i]] = 1.0
+            y,dE1,dE2=backprop(e,target_y,M,K,W1,W2)
+            dE1_total+=dE1
+            dE2_total+=dE2
+        W1 = W1- eta * dE1_total/ X_train.shape[0]
+        W2 = W2- eta * dE2_total/ X_train.shape[0]
+    print(W1)
+    print(W2)
 def test_nn(
     X: np.ndarray,
     M: int,
@@ -150,8 +195,32 @@ print("a1=",a2)
 
 print("----TEST 1.4----")
 #Remember : Non conosci la classe siccome hai saccheggiato il valore ciclatelo (target y)
+np.random.seed(42)
+
+K = 3  # number of classes
+M = 6
+D = train_features.shape[1]
+target_y = np.zeros(K)
+target_y[targets[0]] = 1.0
+W1 = 2 * np.random.rand(D + 1, M) - 1
+W2 = 2 * np.random.rand(M + 1, K) - 1
+
+#y, dE1, dE2 =
+backprop(x, target_y, M, K, W1, W2)
+
+print(W1)
+print(W2)
 
 
+print("----- TEST 1.4 -----")
+np.random.seed(1234)
 
+K = 3  # number of classes
+M = 6
+D = train_features.shape[1]
 
-
+# Initialize two random weight matrices
+W1 = 2 * np.random.rand(D + 1, M) - 1
+W2 = 2 * np.random.rand(M + 1, K) - 1
+#W1tr, W2tr, Etotal, misclassification_rate, last_guesses =
+train_nn(train_features[:20, :], train_targets[:20], M, K, W1, W2, 500, 0.1)
