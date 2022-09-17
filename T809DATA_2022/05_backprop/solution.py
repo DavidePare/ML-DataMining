@@ -129,19 +129,42 @@ def train_nn(
     3. Backpropagating the error through the network to adjust
     the weights.
     '''
-    for i in range(iterations):
+    E_total=[]
+    misclassification_rate= []
+    results = []
+    for j in range(iterations):
+        sum=0
+        errors=0
         dE1_total= np.zeros((W1.shape[0],W1.shape[1]))
         dE2_total= np.zeros((W2.shape[0],W2.shape[1]))
         for i,e in enumerate(X_train):
             target_y = np.zeros(K)
             target_y[t_train[i]] = 1.0
             y,dE1,dE2=backprop(e,target_y,M,K,W1,W2)
+            position=np.argmax(y)
             dE1_total+=dE1
             dE2_total+=dE2
+            if(j==iterations-1):
+                results.append(position)
+            if(target_y[position]!= 1):
+                errors+=1
+            for a in range(len(target_y)):
+                sum+=target_y[a]*np.log(y[a])+(1-target_y[a])*np.log(1-y[a])
+        E_total.append(-sum)
+        misclassification_rate.append(errors/X_train.shape[0])
         W1 = W1- eta * dE1_total/ X_train.shape[0]
         W2 = W2- eta * dE2_total/ X_train.shape[0]
-    print(W1)
-    print(W2)
+
+    print(E_total)
+    print(misclassification_rate)
+    print(results)
+    print(t_train)
+    return [np.zeros(5), np.zeros(5), np.zeros(5), np.zeros(5), E_total]
+    #print(W1)
+    #print(W2)
+
+
+
 def test_nn(
     X: np.ndarray,
     M: int,
@@ -213,14 +236,16 @@ print(W2)
 
 
 print("----- TEST 1.4 -----")
-np.random.seed(1234)
 
+np.random.seed(1234)
+(train_features, train_targets), (test_features, test_targets) = \
+        split_train_test(features, targets)
 K = 3  # number of classes
 M = 6
 D = train_features.shape[1]
-
 # Initialize two random weight matrices
 W1 = 2 * np.random.rand(D + 1, M) - 1
 W2 = 2 * np.random.rand(M + 1, K) - 1
-#W1tr, W2tr, Etotal, misclassification_rate, last_guesses =
-train_nn(train_features[:20, :], train_targets[:20], M, K, W1, W2, 500, 0.1)
+W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features[:20, :], train_targets[:20], M, K, W1, W2, 500, 0.1)
+
+
