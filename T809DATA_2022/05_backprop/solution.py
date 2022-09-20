@@ -49,18 +49,21 @@ def ffnn(
     single hidden layer feed-forward neural network.
     '''
     z0=np.insert(x,0,1)
-    aOne= []
-    z1=[]
+    #aOne=[]
+    #z1=[]
+    aOne= np.zeros(M)
+    z1=np.zeros(M)
     for i in range(M):
-
-        aOne.append(sum(z0*W1[:,i]))
-        z1.append(sigmoid(aOne[i]))
-    z1.insert(0,1)
-    aTwo=[]
-    y=[]
+        aOne[i],z1[i]=perceptron(z0,W1[:,i])
+        #aOne.append(aOnevalue)
+        #z1.append(z1value)
+    z1=np.insert(z1,0,1)
+    aTwo=np.zeros(K)
+    y=np.zeros(K)
     for i in range(K):
-        aTwo.append(sum(z1*W2[:,i]))
-        y.append(sigmoid(aTwo[i]))
+        aTwo[i],y[i]=perceptron(z1,W2[:,i])
+        #aTwo.append(sum(z1*W2[:,i]))
+        #y.append(sigmoid(aTwo[i]))
     return y,z0,z1,aOne,aTwo
 
 def backprop(
@@ -137,6 +140,7 @@ def train_nn(
     for j in range(iterations):
         sum=np.zeros(X_train.shape[0])
         errors=0
+        aii=0
         dE1_total= np.zeros((W1.shape[0],W1.shape[1]))
         dE2_total= np.zeros((W2.shape[0],W2.shape[1]))
         for i,e in enumerate(X_train):
@@ -150,13 +154,15 @@ def train_nn(
                 results.append(position)
             if(target_y[position]!= 1):
                 errors+=1
-            for a in range(len(target_y)):
-                sum[i]+=target_y[a]*np.log(y[a])+(1-target_y[a])*np.log(1-y[a])
+            sum[i]=np.sum(target_y*np.log(y)+(1-target_y)*np.log(1-y))
+            #sum[i]=(np.sum(s))
+            #for a in range(len(target_y)):
+            #    sum[i]+=target_y[a]*np.log(y[a])+(1-target_y[a])*np.log(1-y[a])
+            #print(sum[i])
         E_total.append(-np.mean(sum))
         misclassification_rate.append(errors/X_train.shape[0])
         W1 = W1- eta * dE1_total/ X_train.shape[0]
         W2 = W2- eta * dE2_total/ X_train.shape[0]
-
 
     return W1,W2,np.asarray(E_total),misclassification_rate,results
 
@@ -182,12 +188,17 @@ def test_nn(
 def tester():
     (train_features, train_targets), (test_features, test_targets) = \
         split_train_test(features, targets)
+    np.random.seed(1234)
     K = 3  # number of classes
     M = 6
     D = train_features.shape[1]
     # Initialize two random weight matrices
     W1 = 2 * np.random.rand(D + 1, M) - 1
     W2 = 2 * np.random.rand(M + 1, K) - 1
+    print("W1:")
+    print(W1)
+    print("W2")
+    print(W2)
     W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
     accuracy_ofTrainer= accurancy(np.asarray(last_guesses),train_targets)
     y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
