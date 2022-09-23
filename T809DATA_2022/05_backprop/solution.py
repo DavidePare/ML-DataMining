@@ -185,7 +185,7 @@ def test_nn(
         results.append(np.argmax(y))
     return np.asarray(results)
 
-def tester():
+def tester(features,targets):
     (train_features, train_targets), (test_features, test_targets) = \
         split_train_test(features, targets)
     np.random.seed(1234)
@@ -195,10 +195,6 @@ def tester():
     # Initialize two random weight matrices
     W1 = 2 * np.random.rand(D + 1, M) - 1
     W2 = 2 * np.random.rand(M + 1, K) - 1
-    print("W1:")
-    print(W1)
-    print("W2")
-    print(W2)
     W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
     accuracy_ofTrainer= accurancy(np.asarray(last_guesses),train_targets)
     y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
@@ -213,6 +209,73 @@ def tester():
     print(matrixTwo)
     plot_ETotal(Etotal)
     plot_misclassification_rate(misclassification_rate)
+
+def independet_part_changing_training_number(features,targets):
+    (train_features, train_targets), (test_features, test_targets) = \
+        split_train_test(features, targets)
+    K = 3  # number of classes
+    M = 6
+    D = train_features.shape[1]
+    # Initialize two random weight matrices
+    W1 = 2 * np.random.rand(D + 1, M) - 1
+    W2 = 2 * np.random.rand(M + 1, K) - 1
+
+    accuracy_ofTrainer = []
+    x_plot= []
+    accuracy_ofTester = []
+    #W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
+    #y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
+
+    #accuracy_ofTester.append(accurancy(np.asarray(y_predicted),test_targets))
+    #print(accuracy_ofTester)
+    # Configuring the learning rate
+    '''
+    for i in range(1,200):
+        W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.005*i)
+        accuracy_ofTrainer.append(accurancy(np.asarray(last_guesses),train_targets))
+        y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
+        accuracy_ofTester.append(accurancy(np.asarray(y_predicted),test_targets))
+        if(i%2==0):
+            print("Case analyzed=",i)
+            x_plot.append(0.005*i)
+
+    print(accuracy_ofTester)
+    x = np.linspace(x_plot[0], x_plot[len(x_plot)-1], 199)
+
+    #plt.xticks( x_plot)
+
+    plt.xlabel('LearningRate')
+    plt.ylabel('TesterAccuracy')
+    plt.plot(x,accuracy_ofTester)
+    plt.title("Analysis of changing learning rate")
+
+    plt.savefig("indep_learningrate2.png",dpi=300)
+
+    plt.clf()
+    '''
+    M=1
+    x_plot= []
+    accuracy_ofTester= []
+    for i in range(0,24):
+        M+=1
+        W1 = 2 * np.random.rand(D + 1, M) - 1
+        W2 = 2 * np.random.rand(M + 1, K) - 1
+        x_plot.append(M)
+        W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 100, 0.2)
+        accuracy_ofTrainer.append(accurancy(np.asarray(last_guesses),train_targets))
+        y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
+        accuracy_ofTester.append(accurancy(np.asarray(y_predicted),test_targets))
+        if(i%10==0):
+            print("Case analyzed=",i)
+
+    plt.xticks(range(len(x_plot)), x_plot)
+    plt.plot(accuracy_ofTester)
+    plt.title("Analysis of changing size of the hidden layer")
+    plt.xlabel("Number of neurons")
+    plt.ylabel("Tester Accuracy")
+    plt.savefig("indep_numberNeurons2.png")
+    print(accuracy_ofTester)
+
 
 def accurancy(
     y_calucated: np.ndarray,
@@ -249,8 +312,6 @@ def plot_misclassification_rate(
     plt.savefig("misclassification.png")
     plt.clf()
 
-def independent():
-    pass
 
 
 '''
@@ -339,7 +400,7 @@ tester()
 '''
 
 
-
+'''
 print("TEST EXTRA 2")
 np.random.seed(90210)
 features, targets, classes = load_iris()
@@ -487,3 +548,8 @@ print("MisclassificationRate =",np.allclose(misclassification_rate,misclassifica
 print("last_guesses=",(np.allclose(last_guesses,[2., 0., 2., 0., 0., 1., 2., 2., 1., 0., 0., 2., 2., 0., 1., 1., 0., 1., 0., 2.])))
 
 tester()
+'''
+
+features, targets, classes = load_iris()
+
+independet_part_changing_training_number(features,targets)
