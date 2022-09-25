@@ -1,3 +1,8 @@
+# Author: Davide Parente
+# Date: 25/09/2022
+# Project: 05 Neural Network
+# Acknowledgements:
+#
 from typing import Union
 import numpy as np
 
@@ -49,21 +54,15 @@ def ffnn(
     single hidden layer feed-forward neural network.
     '''
     z0=np.insert(x,0,1)
-    #aOne=[]
-    #z1=[]
     aOne= np.zeros(M)
     z1=np.zeros(M)
     for i in range(M):
         aOne[i],z1[i]=perceptron(z0,W1[:,i])
-        #aOne.append(aOnevalue)
-        #z1.append(z1value)
     z1=np.insert(z1,0,1)
     aTwo=np.zeros(K)
     y=np.zeros(K)
     for i in range(K):
         aTwo[i],y[i]=perceptron(z1,W2[:,i])
-        #aTwo.append(sum(z1*W2[:,i]))
-        #y.append(sigmoid(aTwo[i]))
     return y,z0,z1,aOne,aTwo
 
 def backprop(
@@ -85,35 +84,22 @@ def backprop(
     delta_k = y_k -target_y
     delta_y=[]
 
-    #Play with index
     W=W2.T
     for j in range(len(aOne)):
         value=0
         for i in range(K):
             value+=W[i,j+1]*delta_k[i]
         delta_y.append(d_sigmoid(aOne[j])*value)
-    '''
-    print("Ci" ,delta_y)
 
-    print(len(delta_y))
-    print("a1  ", len(aOne), "  a2 ",len(aTwo))
-    print("W1 ",W1.shape[0]," ",W1.shape[1])
-
-    print("W2 ",W2.shape[0]," ",W2.shape[1])
-    print("z0 ",len(z0), "  z1 ",len(z1))
-    '''
     for i in range(dE1.shape[0]):
         for j in range(dE1.shape[1]):
             dE1[i][j] = delta_y[j]*z0[i]
-    #print(np.asarray(dE1))
 
     for i in range(dE2.shape[0]):
         for j in range(dE2.shape[1]):
             dE2[i][j] = delta_k[j]*z1[i]
-    #print(np.asarray(dE2))
     return y_k,dE1,dE2
-    #print(result)
-    #print(y_k)
+
 
 
 def train_nn(
@@ -155,10 +141,6 @@ def train_nn(
             if(target_y[position]!= 1):
                 errors+=1
             sum[i]=np.sum(target_y*np.log(y)+(1-target_y)*np.log(1-y))
-            #sum[i]=(np.sum(s))
-            #for a in range(len(target_y)):
-            #    sum[i]+=target_y[a]*np.log(y[a])+(1-target_y[a])*np.log(1-y[a])
-            #print(sum[i])
         E_total.append(-np.mean(sum))
         misclassification_rate.append(errors/X_train.shape[0])
         W1 = W1- eta * dE1_total/ X_train.shape[0]
@@ -223,14 +205,10 @@ def independet_part_changing_training_number(features,targets):
     accuracy_ofTrainer = []
     x_plot= []
     accuracy_ofTester = []
-    #W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.1)
-    #y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
 
-    #accuracy_ofTester.append(accurancy(np.asarray(y_predicted),test_targets))
-    #print(accuracy_ofTester)
     # Configuring the learning rate
-    '''
-    for i in range(1,200):
+
+    for i in range(1,50):
         W1tr, W2tr, Etotal, misclassification_rate, last_guesses =train_nn(train_features, train_targets, M, K, W1, W2, 500, 0.005*i)
         accuracy_ofTrainer.append(accurancy(np.asarray(last_guesses),train_targets))
         y_predicted=test_nn(test_features,M,K,W1tr,W2tr)
@@ -239,20 +217,18 @@ def independet_part_changing_training_number(features,targets):
             print("Case analyzed=",i)
             x_plot.append(0.005*i)
 
-    print(accuracy_ofTester)
-    x = np.linspace(x_plot[0], x_plot[len(x_plot)-1], 199)
+    x = np.linspace(x_plot[0], x_plot[len(x_plot)-1], 49)
 
-    #plt.xticks( x_plot)
 
     plt.xlabel('LearningRate')
     plt.ylabel('TesterAccuracy')
     plt.plot(x,accuracy_ofTester)
     plt.title("Analysis of changing learning rate")
 
-    plt.savefig("indep_learningrate2.png",dpi=300)
+    plt.savefig("indep_learningrate.png",dpi=300)
 
     plt.clf()
-    '''
+
     M=1
     x_plot= []
     accuracy_ofTester= []
@@ -273,8 +249,7 @@ def independet_part_changing_training_number(features,targets):
     plt.title("Analysis of changing size of the hidden layer")
     plt.xlabel("Number of neurons")
     plt.ylabel("Tester Accuracy")
-    plt.savefig("indep_numberNeurons2.png")
-    print(accuracy_ofTester)
+    plt.savefig("indep_numberNeurons.png")
 
 
 def accurancy(
@@ -336,7 +311,6 @@ for e in features:
         x=e
 (train_features, train_targets), (test_features, test_targets) = \
     split_train_test(features, targets)
-#x = train_features[0, :]
 np.random.seed(1234)
 K=3
 M=10
@@ -354,7 +328,6 @@ print("a1=",a2)
 
 
 print("----TEST 1.4----")
-#Remember : Non conosci la classe siccome hai saccheggiato il valore ciclatelo (target y)
 np.random.seed(42)
 
 K = 3  # number of classes
@@ -395,12 +368,6 @@ print(guesses)
 print(test_targets)
 
 
-print("----- TEST 2.3 -----")
-tester()
-'''
-
-
-'''
 print("TEST EXTRA 2")
 np.random.seed(90210)
 features, targets, classes = load_iris()
@@ -547,9 +514,9 @@ print("Etotal-Comparison=", np.allclose(Etotal,ETotalTeacher))
 print("MisclassificationRate =",np.allclose(misclassification_rate,misclassification_rateTeacher))
 print("last_guesses=",(np.allclose(last_guesses,[2., 0., 2., 0., 0., 1., 2., 2., 1., 0., 0., 2., 2., 0., 1., 1., 0., 1., 0., 2.])))
 
-tester()
-'''
+
 
 features, targets, classes = load_iris()
 
 independet_part_changing_training_number(features,targets)
+'''
