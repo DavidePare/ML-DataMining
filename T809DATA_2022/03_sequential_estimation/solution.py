@@ -109,6 +109,8 @@ def _plot_changing_sequence_estimate():
 
 
 
-
+np.random.seed(1234)
+print("My solution=",gen_data(2, 3, np.array([0, 1, -1]), 1.3))
+print("Correct solution",[[ 0.61286571, -0.5482684 ,  0.86251906],[-0.40644746,  0.06323465,  0.15331182]])
 
 

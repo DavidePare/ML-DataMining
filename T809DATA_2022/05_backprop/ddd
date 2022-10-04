@@ -1,0 +1,19 @@
+ for j in range(len(aOne)):
+        value=0
+        #for i in range(K):
+        value=W2[j+1,:]*delta_k
+        print("Value=",value)
+        delta_y.append(d_sigmoid(aOne[j])*value)
+    d_y=np.asmatrix(delta_y)
+    print(d_y)
+
+
+
+      for j in range(len(aOne)):
+        value=0
+        for i in range(K):
+            value+=W2[j+1,i]*delta_k
+        delta_y.append(d_sigmoid(aOne[j])*value)
+    d_y=np.asmatrix(delta_y)
+    print(d_y)
+
