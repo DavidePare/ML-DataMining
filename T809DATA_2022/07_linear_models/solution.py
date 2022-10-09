@@ -1,6 +1,6 @@
-# Author: 
-# Date:
-# Project: 
+# Author: Davide Parente
+# Date: 09/10/2022
+# Project: Linear Models for Regression
 # Acknowledgements: 
 #
 
@@ -14,6 +14,8 @@ import scipy
 
 from tools import load_regression_iris
 from scipy.stats import multivariate_normal
+import sklearn.datasets as datasets
+
 
 
 def mvn_basis(
@@ -36,12 +38,7 @@ def mvn_basis(
     * fi - [NxM] is the basis function vectors containing a basis function
     output fi for each data vector x in features
     '''
-    #X= np.matmul(features, mu.T)
-    #K= np.identity(mu.shape[0])*sigma
-    #print(K.shape)
-    #print(X.shape)
-    #print(np.matmul(X,K))
-    #print(X)
+
     res= np.zeros([features.shape[0],mu.shape[0]])
     for i in range(features.shape[0]):
         for j in range(mu.shape[0]):
@@ -114,8 +111,24 @@ def linear_model(
 
     return value
 
-def prediction(prediction):
-    
+def pred(targets,predict):
+    errors= []
+    plt.clf()
+    for i in range(len(targets)):
+        errors.append(np.power(targets[i]-predict[i],2))
+    plt.plot(errors)
+    plt.savefig("squareerror.png")
+    plt.clf()
+
+def acc(targets,predict):
+    t=0
+    for i in range(len(predict)):
+        if(targets[i]==predict[i]):
+            t+=1
+    return t/len(predict)
+
+
+'''
 print("---TEST 1.1---")
 X, t = load_regression_iris()
 N, D = X.shape
@@ -126,10 +139,60 @@ for i in range(D):
     mmax = np.max(X[i, :])
     mu[:, i] = np.linspace(mmin, mmax, M)
 fi = mvn_basis(X, mu, sigma)
-print("FI=",fi)
+print(fi)
 lamda = 0.001
 wml = max_likelihood_linreg(fi, t, lamda)
 print(wml)
 prediction = linear_model(X, mu, sigma, wml)
-print(prediction)
+
+_plot_mvn()
+
+pred(t,prediction)
+'''
+X, t = load_regression_iris()
+N, D = X.shape
+M, sigma = 10, 10
+mu = np.zeros((M, D))
+for i in range(D):
+    mmin = np.min(X[i, :])
+    mmax = np.max(X[i, :])
+    mu[:, i] = np.linspace(mmin, mmax, M)
+fi = mvn_basis(X, mu, sigma)
+lamda = 0.001
+wml = max_likelihood_linreg(fi, t, lamda)
+prediction = linear_model(X, mu, sigma, wml)
+print("W",prediction)
+#Diabets Dataset
+def indep1():
+    diab= datasets.load_diabetes()
+    X, t = diab.data, diab.target
+    N, D = X.shape
+    M, sigma = 100, 1
+    mu = np.zeros((M, D))
+    for i in range(D):
+        mmin = np.min(X[i, :])
+        mmax = np.max(X[i, :])
+        mu[:, i] = np.linspace(mmin, mmax, M)
+    fi = mvn_basis(X, mu, sigma)
+    lamda = 0.1
+    wml = max_likelihood_linreg(fi, t, lamda)
+    prediction = linear_model(X, mu, sigma, wml)
+    pred(t,prediction)
+
+#blob make
+def indep2():
+    X, t = datasets.make_blobs(40,centers=2)
+    N, D = X.shape
+    M, sigma = 10, 2
+    mu = np.zeros((M, D))
+    for i in range(D):
+        mmin = np.min(X[i, :])
+        mmax = np.max(X[i, :])
+        mu[:, i] = np.linspace(mmin, mmax, M)
+    fi = mvn_basis(X, mu, sigma)
+    lamda = 0.001
+    wml = max_likelihood_linreg(fi, t, lamda)
+    prediction = linear_model(X, mu, sigma, wml)
+    pred(t,prediction)
+
 _plot_mvn()
