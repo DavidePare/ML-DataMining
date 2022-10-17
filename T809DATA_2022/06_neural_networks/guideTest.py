@@ -1,5 +1,5 @@
 import torch
-afrom torchvision.models import resnet18, ResNet18_Weights
+from torchvision.models import resnet18, ResNet18_Weights
 
 import numpy as np
 
