@@ -1,0 +1,127 @@
+Confusion matrix:
+ [[162   3]
+ [ 55  48]]
+Accuracy score: 0.7835820895522388
+Recall score: 0.46601941747572817
+Precision score: 0.9411764705882353
+Confusion matrix:
+ [[148  17]
+ [ 30  73]]
+Accuracy score: 0.8246268656716418
+Recall score: 0.7087378640776699
+Precision score: 0.8111111111111111
+ehi who
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+{'n_estimators': 25, 'max_depth': 3, 'learning_rate': 0.3450000000000002}
+Confusion matrix:
+ [[148  17]
+ [ 28  75]]
+Accuracy score: 0.832089552238806
+Recall score: 0.7281553398058253
+Precision score: 0.8152173913043478
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+{'n_estimators': 69, 'max_depth': 2, 'learning_rate': 0.31000000000000016}
+Confusion matrix:
+ [[151  14]
+ [ 29  74]]
+Accuracy score: 0.8395522388059702
+Recall score: 0.7184466019417476
+Precision score: 0.8409090909090909
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A
+A

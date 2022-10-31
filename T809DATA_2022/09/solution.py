@@ -1,9 +1,14 @@
+# Author:Davide Parente
+# Date: 23/10/2022
+# Project: Random Forest
+# Acknowledgements:
+#
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn
 from sklearn.datasets import load_breast_cancer
 
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import (confusion_matrix, accuracy_score, recall_score,
@@ -63,8 +68,8 @@ class CancerClassifier:
         '''
         #cross_val_score()
         #TODO
-        return cross_val_score(self.classifier,self.X_test,self.t_test)
-        ...
+        return np.average(cross_val_score(self.classifier,self.X,self.t,cv=10))
+
 
     def feature_importance(self) -> list:
         '''
@@ -73,22 +78,47 @@ class CancerClassifier:
         indices, sorted by feature importance (high to low).
         '''
         plt.clf()
-
+        classes  = ['id','diagnosis','radius_mean','texture_mean','perimeter_mean','area_mean','smoothness_mean','compactness_mean','concavity_mean','concave','points_mean','symmetry_mean','fractal_dimension_mean','radius_se','texture_se','perimeter_se','area_se','smoothness_se','compactness_se','concavity_se','concave points_se','symmetry_se','fractal_dimension_se','radius_worst','texture_worst','perimeter_worst','area_worst','smoothness_worst','compactness_worst','concavity_worst','concave points_worst','symmetry_worst','fractal_dimension_worst']
         a=self.classifier.feature_importances_
-        #print(a)
         map = {}
         for i,x in enumerate(a):
             map[x]=i
         od = OrderedDict(sorted(map.items(),reverse=True))
         plt.xlabel('Feature index')
+        #print(od.values())
         x=list(od.keys())[:10]
+        #print("Most important feature index:",list(od.values())[0],". Name of the column:",classes[list(od.values())[0]])
+        #print("Least important feature:",list(od.values())[-1],". Name of the column:",classes[list(od.values())[-1]])
         plt.ylabel('Feature importante')
         y=list(od.values())[:10]
-        print(x)
-        print(y)
+
         plt.bar(range(10),x, tick_label=y)
         plt.savefig("2_2_1.png")
 
+    def feature_importanceAdaBooster(self) -> list:
+        '''
+        Draw and show a barplot of feature importances
+        for the current classifier and return a list of
+        indices, sorted by feature importance (high to low).
+        '''
+        plt.clf()
+        classes  = ['id','diagnosis','radius_mean','texture_mean','perimeter_mean','area_mean','smoothness_mean','compactness_mean','concavity_mean','concave','points_mean','symmetry_mean','fractal_dimension_mean','radius_se','texture_se','perimeter_se','area_se','smoothness_se','compactness_se','concavity_se','concave points_se','symmetry_se','fractal_dimension_se','radius_worst','texture_worst','perimeter_worst','area_worst','smoothness_worst','compactness_worst','concavity_worst','concave points_worst','symmetry_worst','fractal_dimension_worst']
+        a=self.classifier.feature_importances_
+        map = {}
+        for i,x in enumerate(a):
+            map[x]=i
+        od = OrderedDict(sorted(map.items(),reverse=True))
+        plt.xlabel('Feature index')
+        #print(od.values())
+        x=list(od.keys())[:5]
+        #print("Most important feature index:",list(od.values())[0],". Name of the column:",classes[list(od.values())[0]])
+        #print("Least important feature:",list(od.values())[-1],". Name of the column:",classes[list(od.values())[-1]])
+        plt.ylabel('Feature importante')
+        y=list(od.values())[:5]
+        #print(x)
+        #print(y)
+        plt.bar(range(5),x, tick_label=y)
+        plt.savefig("indep.png")
 
 
 def _plot_oob_error():
@@ -206,8 +236,28 @@ def _plot_extreme_oob_error():
     plt.legend(loc="upper right")
     plt.savefig('3_2_1.png')
 
+def randomSearchCombo():
+    n_estimators=0
+    max_features=0
+    acc=0
+    for i in range(1,150):
+        for j in {"sqrt", "log2", None}:
+            classifier_type = sklearn.ensemble.RandomForestClassifier(n_estimators=i ,max_features=j)
+            cc = CancerClassifier(classifier_type)
+            if(cc.accuracy()>acc):
+                n_estimators=i
+                max_features=j
+                acc=cc.accuracy()
+    print("Estimators number:",n_estimators," max features:",max_features)
+    classifier_type = sklearn.ensemble.RandomForestClassifier(n_estimators=n_estimators ,max_features=max_features)
+    cc = CancerClassifier(classifier_type)
+    print("Accuracy gotted:",cc.accuracy())
+    print("Confusion matrix:\n",cc.confusion_matrix())
+    print("Precision:",cc.precision())
+    print("Recall:",cc.recall())
+    print("Cross validation accuracy:",cc.cross_validation_accuracy())
 
-_plot_extreme_oob_error()
+'''
 print("Decision Tree Classifier")
 classifier_type = sklearn.tree.DecisionTreeClassifier()
 cc = CancerClassifier(classifier_type)
@@ -219,7 +269,7 @@ print("Cross validation accuracy:",cc.cross_validation_accuracy())
 print("TEST 1.1")
 
 print("Random Forest Classifier")
-classifier_type = sklearn.ensemble.RandomForestClassifier(3)
+classifier_type = sklearn.ensemble.RandomForestClassifier()
 cc = CancerClassifier(classifier_type)
 print("Accuracy gotted:",cc.accuracy())
 print("Confusion matrix:\n",cc.confusion_matrix())
@@ -237,7 +287,16 @@ print("Confusion matrix:\n",cc.confusion_matrix())
 print("Precision:",cc.precision())
 print("Recall:",cc.recall())
 print("Cross validation accuracy:",cc.cross_validation_accuracy())
+cc.feature_importance()
+
 _plot_extreme_oob_error()
 
 
-
+classifier_type = sklearn.ensemble.AdaBoostClassifier()
+cc = CancerClassifier(classifier_type)
+print("Accuracy gotted:",cc.accuracy())
+print("Confusion matrix:\n",cc.confusion_matrix())
+print("Precision:",cc.precision())
+print("Recall:",cc.recall())
+print("Cross validation accuracy:",cc.cross_validation_accuracy())
+'''
