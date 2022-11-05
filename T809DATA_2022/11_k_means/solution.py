@@ -136,19 +136,17 @@ def update_Mu(
     out (np.ndarray): A [k x f] array of updated prototypes.
     '''
     u= np.zeros(Mu.shape)
-    '''
-    for i in range(R.shape[1]):
-        nCluster=np.sum(R[:,i])
-        x=(R[:][i]*X[:][i])
-        print(x)
-        u[i]= np.sum(x)/nCluster
-    print("U",u)
-    '''
-    for n in range(R.shape[0]):
-        for k in range(R.shape[1]):
-            u[:][k]+=R[n][k]*np.power((np.abs(X[n])),2)*(1/np.sum(R[:,k]))
-            #if I put mu_k non riporta
-
+    #print((R[0][0]*X[0,:]+R[1][0]*X[1,:]+R[2][0]*X[2,:])/(R[0][0]+R[1][0]+R[2][0]))
+    #print((R[0][1]*X[0,:]+R[1][1]*X[1,:]+R[2][1]*X[2,:])/(R[0][1]+R[1][1]+R[2][1]))
+    for k in range(R.shape[1]):
+        n_R=0
+        for n in range(R.shape[0]):
+            u[k]+=R[n][k]*X[n]
+            n_R+=R[n][k]
+        u[k]=u[k]/n_R
+        #u[:][k]+=(R[n][k]*np.powerX[n])*(1/np.sum(R[:,k]))
+        #if I put mu_k non riporta
+    print(u)
     return u
 
 
@@ -162,33 +160,41 @@ def k_means(
     X_std = X.std(axis=0)
     X_standard = (X-X_mean)/X_std
     # run the k_means algorithm on X_st, not X.
-    #print(X_standard.shape)
-    #R=determine_r(X_standard)
-    #KMeans.fit()
 
     # we pick K random samples from X as prototypes
     nn = sk.utils.shuffle(range(X_standard.shape[0]))
     Mu = X_standard[nn[0: k], :]
-    dist=distance_matrix(X_standard,Mu)
-    R=determine_r(dist)
-    print(determine_j(R,dist))
+    Js=[]
     # Then we have to "de-standardize" the prototypes
+    for x in range(num_its):
+        dist=distance_matrix(X_standard,Mu)
+        R=determine_r(dist)
+        Mu=update_Mu(Mu,X_standard,R)
+        Js.append(determine_j(R,dist))
+
+
     for i in range(k):
         Mu[i, :] = Mu[i, :] * X_std + X_mean
-        for x in range(num_its):
-            dist=distance_matrix(X_standard,Mu)
-        update_Mu(Mu,X,R)
-        print(determine_j(R,dist))
 
-    ...
+    return Mu,R,Js
 
 
 def _plot_j():
-    ...
+    X, y, c = load_iris()
+    Mu,R,Js=k_means(X, 4, 10)
+    plt.plot(Js)
+    plt.savefig("1_6_1.png")
 
 
 def _plot_multi_j():
-    ...
+    X, y, c = load_iris()
+    k= [2,3,5,10]
+    figure, axis = plt.subplots(2, 2)
+    for i,element in enumerate(k):
+        Mu,R,Js=k_means(X, element, 10)
+        axis[int(i/2), i%2].plot(Js)
+        axis[int(i/2), i%2].set_title("\n k="+str(element))
+    plt.savefig("1_7_1.png")
 
 
 def k_means_predict(
@@ -212,15 +218,44 @@ def k_means_predict(
     Returns:
     * the predictions (list)
     '''
-    ...
-
+    Mu,R,Js= k_means(X,len(classes),num_its)
+    bestCluster = np.zeros((len(classes),len(classes)))
+    #print(bestCluster)
+    #print(R)
+    for i in range(t.shape[0]):
+        bestCluster[np.argmax(R[:][i])][t[i]]+=1
+    #print(bestCluster)
+    ClusterFinal=np.zeros(len(classes))
+    for i in range(len(classes)):
+        ClusterFinal[i]=np.argmax(bestCluster[i])
+    #print(ClusterFinal)
+    prediction= np.zeros(R.shape[0])
+    for i in range(R.shape[0]):
+        prediction[i]=ClusterFinal[np.argmax(R[i])]
+    #print(prediction)
+    #print(t)
+    return prediction
 
 def _iris_kmeans_accuracy():
-    ...
-
+    X, y, c = load_iris()
+    prediction=k_means_predict(X, y, c, 5)
+    acc=0
+    for i in range(prediction.shape[0]):
+        if(y[i]==prediction[i]):
+            acc+=1
+    confusion_matrix = np.zeros((len(c),len(c)))
+    for i in range(len(y)):
+        confusion_matrix[y[i]][int(prediction[i])]+=1
+    print("Accuracy: "+str(acc/len(y)))
+    print("Confusion Matrix:")
+    print(confusion_matrix)
 
 def _my_kmeans_on_image():
-    ...
+    num_cluster= [2,5,10,20]
+    image=image_to_numpy()
+    kmeans = KMeans(n_clusters=2).fit(image)
+
+
 
 
 def plot_image_clusters(n_clusters: int):
@@ -238,11 +273,16 @@ def plot_image_clusters(n_clusters: int):
 
 
 def _gmm_info():
-    ...
+    X, y, c = load_iris()
+    g = GaussianMixture(n_components=3).fit(X,y)
+    return g.means_, g.covariances_, g.weights_
 
 
 def _plot_gmm():
-    ...
+    X, y, c = load_iris()
+    g = GaussianMixture(n_components=3).fit(X,y)
+    predictions = g.predict(X)
+    plot_gmm_results(X,predictions,g.means_,g.covariances_)
 
 
 print("---TEST 1.1---")
@@ -272,7 +312,7 @@ dist = np.array([
         [  2, 0.5,   7]])
 R = determine_r(dist)
 print(determine_j(R, dist))
-'''
+
 print("--- TEST 1.4 ---")
 X = np.array([
     [0, 1, 0],
@@ -285,9 +325,31 @@ R = np.array([
     [1, 0],
     [0, 1],
     [1, 0]])
-print(update_Mu(Mu, X, R))
+update_Mu(Mu, X, R)
 
 print("--- Test 1.5 ---")
 X, y, c = load_iris()
-k_means(X, 4, 10)
-'''
+#print(k_means(X, 4, 10))
+
+
+print("--- Test 1.6 ---")
+_plot_j()
+
+print("--- Test 1.7 ---")
+_plot_multi_j()
+
+print("--- Test 1.9 ---")
+X, y, c = load_iris()
+k_means_predict(X, y, c, 5)
+
+print("--- Test 1.10 ---")
+_iris_kmeans_accuracy()
+
+print("--- Test 2.1 ---")
+#_my_kmeans_on_image()
+print("--- Test 3.1")
+print(_gmm_info())
+
+
+print("--- Test 3.2 ---")
+_plot_gmm()
