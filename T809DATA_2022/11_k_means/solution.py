@@ -94,22 +94,6 @@ def determine_j(R: np.ndarray, dist: np.ndarray) -> float:
 
     Returns:
     * out (float): The value of the objective function
-
-    sum=0
-    print(R.shape)
-    u= np.zeros(R.shape[1])
-    print(dist)
-    for i in range(R.shape[1]):
-        nCluster=np.sum(R[:,i])
-        x=(R[:][i]*dist[i])
-        print(x)
-        u[i]= np.sum(x)/nCluster
-    print("U",u)
-    sum=0
-    for n in range(R.shape[0]):
-        for k in range(R.shape[1]):
-            sum+=R[n][k]*np.power((np.abs(dist[n][k]-u[k])),2)*(1/np.sum(R[:,k]))
-    return sum
     '''
     sum=0
     for i in range(R.shape[0]):
@@ -136,17 +120,12 @@ def update_Mu(
     out (np.ndarray): A [k x f] array of updated prototypes.
     '''
     u= np.zeros(Mu.shape)
-    #print((R[0][0]*X[0,:]+R[1][0]*X[1,:]+R[2][0]*X[2,:])/(R[0][0]+R[1][0]+R[2][0]))
-    #print((R[0][1]*X[0,:]+R[1][1]*X[1,:]+R[2][1]*X[2,:])/(R[0][1]+R[1][1]+R[2][1]))
     for k in range(R.shape[1]):
         n_R=0
         for n in range(R.shape[0]):
             u[k]+=R[n][k]*X[n]
             n_R+=R[n][k]
         u[k]=u[k]/n_R
-        #u[:][k]+=(R[n][k]*np.powerX[n])*(1/np.sum(R[:,k]))
-        #if I put mu_k non riporta
-    print(u)
     return u
 
 
@@ -193,7 +172,8 @@ def _plot_multi_j():
     for i,element in enumerate(k):
         Mu,R,Js=k_means(X, element, 10)
         axis[int(i/2), i%2].plot(Js)
-        axis[int(i/2), i%2].set_title("\n k="+str(element))
+        axis[int(i/2), i%2].set_title("k="+str(element))
+    figure.tight_layout()
     plt.savefig("1_7_1.png")
 
 
@@ -220,20 +200,15 @@ def k_means_predict(
     '''
     Mu,R,Js= k_means(X,len(classes),num_its)
     bestCluster = np.zeros((len(classes),len(classes)))
-    #print(bestCluster)
-    #print(R)
+
     for i in range(t.shape[0]):
         bestCluster[np.argmax(R[:][i])][t[i]]+=1
-    #print(bestCluster)
     ClusterFinal=np.zeros(len(classes))
     for i in range(len(classes)):
         ClusterFinal[i]=np.argmax(bestCluster[i])
-    #print(ClusterFinal)
     prediction= np.zeros(R.shape[0])
     for i in range(R.shape[0]):
         prediction[i]=ClusterFinal[np.argmax(R[i])]
-    #print(prediction)
-    #print(t)
     return prediction
 
 def _iris_kmeans_accuracy():
@@ -252,8 +227,8 @@ def _iris_kmeans_accuracy():
 
 def _my_kmeans_on_image():
     num_cluster= [2,5,10,20]
-    image=image_to_numpy()
-    kmeans = KMeans(n_clusters=2).fit(image)
+    for x in num_cluster:
+        plot_image_clusters(x)
 
 
 
@@ -262,14 +237,16 @@ def plot_image_clusters(n_clusters: int):
     '''
     Plot the clusters found using sklearn k-means.
     '''
+    plt.clf()
     image, (w, h) = image_to_numpy()
-    ...
-    plt.subplot('121')
+    kmeans = KMeans(n_clusters=n_clusters).fit(image)
+
+    plt.subplot(1,2,1)
     plt.imshow(image.reshape(w, h, 3))
-    plt.subplot('122')
+    plt.subplot(1,2,2)
     # uncomment the following line to run
-    # plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
-    plt.show()
+    plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
+    plt.savefig("2_1_"+str(n_clusters)+".png")
 
 
 def _gmm_info():
@@ -283,6 +260,83 @@ def _plot_gmm():
     g = GaussianMixture(n_components=3).fit(X,y)
     predictions = g.predict(X)
     plot_gmm_results(X,predictions,g.means_,g.covariances_)
+
+def indep1(
+    X: np.ndarray,
+    t: np.ndarray,
+    k: int, #Number of clusters
+    classes: list,
+    num_its: int
+    ) -> np.ndarray:
+    Mu,R,Js= k_means(X,k,num_its)
+    bestCluster = np.zeros((k,len(classes)))
+    colors=['blue','orange','green','olive','purple','brown','pink','yellow','gray','cyan']
+    for i in range(t.shape[0]):
+        bestCluster[np.argmax(R[:][i])][t[i]]+=1
+    ClusterFinal=np.zeros(k)
+    for i in range(k):
+        ClusterFinal[i]=np.argmax(bestCluster[i])
+    prediction= np.zeros(R.shape[0])
+    for i in range(R.shape[0]):
+        x, y = X[i,0],X[i,2]
+        prediction[i]=ClusterFinal[np.argmax(R[i])]
+        if(prediction[i]==t[i]):
+            plt.scatter(x, y,c=colors[np.argmax(R[i])],linewidths=2)
+        else:
+            plt.scatter(x, y,c=colors[np.argmax(R[i])],edgecolors='red',linewidths=2)
+    print("Accuracy:",accuracy_score(t,prediction))
+    print("Confusion matrix:")
+    print(confusion_matrix(t,prediction))
+    plt.savefig("indep.png")
+    return prediction
+
+def indep2(
+    X: np.ndarray,
+    t: np.ndarray,
+    k: int, #Number of clusters
+    classes: list,
+    num_its: int
+    ) -> np.ndarray:
+    Mu,R,Js= k_means(X,k,num_its)
+    bestCluster = np.zeros((k,len(classes)))
+    for i in range(t.shape[0]):
+        bestCluster[np.argmax(R[:][i])][t[i]]+=1
+    ClusterFinal=np.zeros(k)
+    for i in range(k):
+        ClusterFinal[i]=np.argmax(bestCluster[i])
+    prediction= np.zeros(R.shape[0])
+    for i in range(R.shape[0]):
+        prediction[i]=ClusterFinal[np.argmax(R[i])]
+    print("Accuracy:",accuracy_score(t,prediction))
+    print("Confusion matrix:")
+    print(confusion_matrix(t,prediction))
+    return prediction
+
+def plot_image_clusters_walterWhite(
+        path: str = './images/Walter_White_S5B.png'
+    ):
+    '''
+    Plot the clusters found using sklearn k-means.
+    '''
+    plt.clf()
+    print(path)
+    image, (w, h) = image_to_numpy(path)
+    n_clusters=[2,5,10,20,30]
+    plt.subplot(1,6,1)
+    plt.imshow(image.reshape(w, h, 3))
+    for i,x in enumerate(n_clusters):
+        kmeans = KMeans(n_clusters=x).fit(image)
+        plt.subplot(1,6,i+2)
+        # uncomment the following line to run
+        plt.imshow(kmeans.labels_.reshape(w, h), cmap="plasma")
+
+    plt.title("Walter White")
+    plt.savefig("indep2.png")
+
+#X, y, c = load_iris()
+
+#indep2(X,y,50,c,10)
+#indep2(X,y,80,c,10)
 
 
 print("---TEST 1.1---")
@@ -353,3 +407,15 @@ print(_gmm_info())
 
 print("--- Test 3.2 ---")
 _plot_gmm()
+
+_iris_kmeans_accuracy()
+
+_my_kmeans_on_image()
+
+
+#Funziona
+print("--- ExtraTest ---")
+X, y, c = load_iris()
+np.random.seed(42)
+Mu, R, Js = k_means(X, 4, 10)
+print(Js)

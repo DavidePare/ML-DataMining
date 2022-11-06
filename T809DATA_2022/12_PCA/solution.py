@@ -57,45 +57,86 @@ def scatter_standardized_dims(
         y[s]= a[j]
     plt.scatter(x,y)
 
+def notstand(
+    X: np.ndarray,
+    i: int,
+    j: int,
+):
+    x = np.zeros(X.shape[0])
+    y = np.zeros(X.shape[0])
+    for s,a in enumerate(X):
+        x[s]= a[i]
+        y[s]= a[j]
+    plt.scatter(x,y)
 
 def _scatter_cancer():
+    plt.clf()
+    plt.figure(figsize=(12,10))
     X, y = load_cancer()
-    ...
+    print(X.shape[1])
+    for i in range(X.shape[1]):
+        plt.subplot(5, 6, i+1)
+        notstand(X,0,i)
 
+    plt.savefig("1_3_1.png")
 
 def _plot_pca_components():
-    ...
+
+    plt.clf()
+    pca= PCA()
     X, y = load_cancer()
-    for i in range(...):
-        plt.subplot(5, 6, ...)
-        ...
-    plt.show()
+    X_std=standardize(X)
+    plt.figure(figsize=(20,18))
+    pca.fit_transform(X_std)
+    for i in range(pca.components_.shape[1]):
+        plt.subplot(5, 6, i+1)
+        plt.plot(pca.components_[i])
+        plt.title("PCA "+str(i+1))
+    plt.savefig("2_1_1.png")
 
 
 def _plot_eigen_values():
-    ...
+
+    plt.clf()
+    pca= PCA()
+    X, y = load_cancer()
+    X_std=standardize(X)
+    pca.fit_transform(X_std)
+    print(pca.explained_variance_)
+    plt.plot(pca.explained_variance_)
     plt.xlabel('Eigenvalue index')
     plt.ylabel('Eigenvalue')
     plt.grid()
-    plt.show()
+    plt.savefig("3_1_1.png")
 
 
 def _plot_log_eigen_values():
-    ...
+    plt.clf()
+    pca= PCA()
+    X, y = load_cancer()
+    X_std=standardize(X)
+    pca.fit_transform(standardize(X_std))
+    plt.plot(np.log10(pca.explained_variance_))
+
     plt.xlabel('Eigenvalue index')
     plt.ylabel('$\log_{10}$ Eigenvalue')
     plt.grid()
-    plt.show()
+    plt.savefig("3_1_2.png")
 
 
 def _plot_cum_variance():
-    ...
+    plt.clf()
+    pca= PCA()
+    X, y = load_cancer()
+    X_std=standardize(X)
+    pca.fit_transform(standardize(X_std))
+    plt.plot(np.cumsum(pca.explained_variance_))
     plt.xlabel('Eigenvalue index')
     plt.ylabel('Percentage variance')
     plt.grid()
-    plt.show()
+    plt.savefig("3_1_3.png")
 
-
+'''
 print(standardize(np.array([[0, 0], [0, 0], [1, 1], [1, 1]])))
 
 X = np.array([
@@ -104,5 +145,10 @@ X = np.array([
     [4, 5, 5, 4],
     [2, 2, 2, 2],
     [8, 6, 4, 2]])
-scatter_standardized_dims(X, 0, 2)
-plt.show()
+_scatter_cancer()
+_plot_pca_components()
+
+_plot_eigen_values()
+_plot_log_eigen_values()
+_plot_cum_variance()
+'''
