@@ -1,6 +1,6 @@
-# Author: 
-# Date:
-# Project: 
+# Author: Davide Parente
+# Date: 06/11/2022
+# Project: PCA
 # Acknowledgements: 
 #
 
@@ -13,7 +13,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-
+import sklearn.datasets as datasets
+import pandas as pd
 from tools import load_cancer
 
 
@@ -73,7 +74,6 @@ def _scatter_cancer():
     plt.clf()
     plt.figure(figsize=(12,10))
     X, y = load_cancer()
-    print(X.shape[1])
     for i in range(X.shape[1]):
         plt.subplot(5, 6, i+1)
         notstand(X,0,i)
@@ -102,7 +102,7 @@ def _plot_eigen_values():
     X, y = load_cancer()
     X_std=standardize(X)
     pca.fit_transform(X_std)
-    print(pca.explained_variance_)
+    #print(pca.explained_variance_)
     plt.plot(pca.explained_variance_)
     plt.xlabel('Eigenvalue index')
     plt.ylabel('Eigenvalue')
@@ -135,6 +135,42 @@ def _plot_cum_variance():
     plt.ylabel('Percentage variance')
     plt.grid()
     plt.savefig("3_1_3.png")
+
+
+def load_iris():
+    '''
+    Load the iris dataset that contains N input features
+    of dimension F and N target classes.
+
+    Returns:
+    * inputs (np.ndarray): A [N x F] array of input features
+    * targets (np.ndarray): A [N,] array of target classes
+    '''
+    iris = datasets.load_iris()
+    return iris.data, iris.target, [0, 1, 2]
+
+def indep():
+    X,y,c=load_iris()
+    pca =PCA(n_components=3)
+    pca.fit(X)
+    pca.fit_transform(X)
+    loadings = pca.components_.T
+    #df_loadings = pd.DataFrame(loadings, columns=['PC1', 'PC2','PC3'], index=X.feature_names)
+    #print(pca.explained_variance_)
+
+    plt.plot(pca.explained_variance_)
+    
+    plt.xlabel('Eigenvalue index')
+    plt.ylabel('Percentage variance')
+    plt.grid()
+    plt.savefig("indep3_1.png")
+    plt.clf()
+    plt.plot(np.cumsum(pca.explained_variance_))
+    plt.xlabel('Eigenvalue index')
+    plt.ylabel('Percentage variance')
+    plt.grid()
+    plt.savefig("indep3_2.png")
+
 
 '''
 print(standardize(np.array([[0, 0], [0, 0], [1, 1], [1, 1]])))

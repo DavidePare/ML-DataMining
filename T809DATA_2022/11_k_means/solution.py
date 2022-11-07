@@ -1,6 +1,6 @@
-# Author: 
-# Date:
-# Project: 
+# Author: Davide Parente
+# Date: 06/11/2022
+# Project: k-Means
 # Acknowledgements: 
 #
 
@@ -332,90 +332,3 @@ def plot_image_clusters_walterWhite(
 
     plt.title("Walter White")
     plt.savefig("indep2.png")
-
-#X, y, c = load_iris()
-
-#indep2(X,y,50,c,10)
-#indep2(X,y,80,c,10)
-
-
-print("---TEST 1.1---")
-a = np.array([
-    [1, 0, 0],
-    [4, 4, 4],
-    [2, 2, 2]])
-b = np.array([
-    [0, 0, 0],
-    [4, 4, 4]])
-print(distance_matrix(a, b))
-
-print("---Test 1.2---")
-dist = np.array([
-        [  1,   2,   3],
-        [0.3, 0.1, 0.2],
-        [  7,  18,   2],
-        [  2, 0.5,   7]])
-print(determine_r(dist))
-
-
-print("--- TEST 1.3 ---")
-dist = np.array([
-        [  1,   2,   3],
-        [0.3, 0.1, 0.2],
-        [  7,  18,   2],
-        [  2, 0.5,   7]])
-R = determine_r(dist)
-print(determine_j(R, dist))
-
-print("--- TEST 1.4 ---")
-X = np.array([
-    [0, 1, 0],
-    [1, 0, 0],
-    [0, 0, 0]])
-Mu = np.array([
-    [0.0, 0.5, 0.1],
-    [0.8, 0.2, 0.3]])
-R = np.array([
-    [1, 0],
-    [0, 1],
-    [1, 0]])
-update_Mu(Mu, X, R)
-
-print("--- Test 1.5 ---")
-X, y, c = load_iris()
-#print(k_means(X, 4, 10))
-
-
-print("--- Test 1.6 ---")
-_plot_j()
-
-print("--- Test 1.7 ---")
-_plot_multi_j()
-
-print("--- Test 1.9 ---")
-X, y, c = load_iris()
-k_means_predict(X, y, c, 5)
-
-print("--- Test 1.10 ---")
-_iris_kmeans_accuracy()
-
-print("--- Test 2.1 ---")
-#_my_kmeans_on_image()
-print("--- Test 3.1")
-print(_gmm_info())
-
-
-print("--- Test 3.2 ---")
-_plot_gmm()
-
-_iris_kmeans_accuracy()
-
-_my_kmeans_on_image()
-
-
-#Funziona
-print("--- ExtraTest ---")
-X, y, c = load_iris()
-np.random.seed(42)
-Mu, R, Js = k_means(X, 4, 10)
-print(Js)
